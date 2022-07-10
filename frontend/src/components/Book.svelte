@@ -1,12 +1,6 @@
 <script lang="ts">
     export let title
     export let author
-
-    type BookType = {
-        id: number,
-        title: string,
-        author: string
-    }
 </script>
 
 <card class="p-4 md:w-1/3">
