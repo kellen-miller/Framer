@@ -168,36 +168,39 @@ pub async fn get_books_id(Path(id): Path<u32>) -> Html<String> {
     }).join().unwrap().into()
 }
 
-/// axum handler for "GET /books" which responds with a resource page.
-/// This demo uses our DATA; a production app could use a database.
-/// This demo must clone the DATA in order to sort items by title.
-pub async fn get_books() -> Html<String> {
-    thread::spawn(move || {
-        let data = DATA.lock().unwrap();
-        let mut books = data.values()
-            .collect::<Vec<_>>()
-            .clone();
-        books.sort_by(|a, b| a.title.cmp(&b.title));
-        books.iter()
-            .map(|&book| format!("<p>{}</p>\n", &book))
-            .collect::<String>()
-    }).join().unwrap().into()
-}
-
-/// To access data, create a thread, spawn it, then get the lock.
-/// When you're done, then join the thread with its parent thread.
-// async fn print_data() {
-//     thread::spawn(move || {
-//         let data = DATA.lock().unwrap();
-//         println!("data: {:?}", data);
-//     }).join().unwrap()
-// }
 
 /// axum handler for "PUT /demo.json" which uses `aumx::extract::Json`.
 /// This buffers the request body then deserializes it using serde.
 /// The `Json` type supports types that implement `serde::Deserialize`.
 pub async fn put_demo_json(Json(data): Json<Value>) -> String {
     format!("Put demo JSON data: {:?}", data)
+}
+
+/// axum handler for "GET /books" which responds with a resource page.
+/// This demo uses our DATA; a production app could use a database.
+/// This demo must clone the DATA in order to sort items by title.
+
+// write a function that returns a json array of books from the DATA store.
+// this function should be called from the get_books handler.
+// it should return a json array of books.
+//  let mut books = data.values()
+//             .collect::<Vec<_>>()
+//             .clone();
+//         books.sort_by(|a, b| a.title.cmp(&b.title));
+//         books.iter()
+//             .
+//             .map(|&book| format!("<p>{}</p>\n", &book))
+//             .collect::<String>()
+pub async fn get_books() -> Json<Value> {
+    thread::spawn(move || {
+        let data = DATA.lock().unwrap();
+        let mut books = data.values()
+            .collect::<Vec<_>>()
+            .clone();
+        books.sort_by(|a, b| a.title.cmp(&b.title));
+        let books_json = serde_json::to_value(books).unwrap();
+        books_json
+    }).join().unwrap().into()
 }
 
 /// axum handler for "PUT /demo.json" which uses `aumx::extract::Json`.

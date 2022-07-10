@@ -12,6 +12,7 @@ use crate::book::Book;
 /// Create a data store as a global variable with `Lazy` and `Mutex`.
 /// This demo implementation uses a `HashMap` for ease and speed.
 /// The map key is a primary key for lookup; the map value is a Book.
+///
 pub static DATA: Lazy<Mutex<HashMap<u32, Book>>> = Lazy::new(|| Mutex::new(
     HashMap::from([
         (1, Book {

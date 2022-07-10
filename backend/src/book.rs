@@ -8,7 +8,7 @@ use std::fmt::{
 use serde::Deserialize;
 
 /// Demo book structure with some example fields for id, title, author.
-#[derive(Debug, Deserialize, Clone, Eq, Hash, PartialEq)]
+#[derive(Debug, Deserialize, Clone, Eq, Hash, PartialEq, serde::Serialize)]
 pub struct Book {
     pub id: u32,
     pub title: String,

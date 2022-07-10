@@ -9,7 +9,7 @@
     "noEmit": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
-      "@": [
+      "@/*": [
         "./src/*"
       ]
     },

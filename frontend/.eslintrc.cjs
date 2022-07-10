@@ -1,14 +1,11 @@
-import typescript from 'typescript'
-
 module.exports = {
 	root: true,
 	parser: '@typescript-eslint/parser',
-	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier', 'square-svelte-store'],
+	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
 	plugins: ['svelte3', '@typescript-eslint'],
-	ignorePatterns: ['*.cjs']
+	ignorePatterns: ['*.cjs'],
 	overrides: [{files: ['*.svelte'], processor: 'svelte3/svelte3'}],
-	settings: {'svelte3/typescript': () => typescript},
-	rules: {'square-svelte-store/use-square-svelte-store': 'error'},
+	settings: {'svelte3/typescript': () => require('typescript')},
 	parserOptions: {
 		sourceType: 'module',
 		ecmaVersion: 2020

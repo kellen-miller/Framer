@@ -1,7 +1,9 @@
 <script>
-    import "../app.css";
+    import "../styles/app.css";
+    import
 </script>
 
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
+<section class="text-gray-600 body-font">
+    <div class="container px-5 py-24 mx-auto">
+    </div>
+</section>
