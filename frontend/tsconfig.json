@@ -5,6 +5,14 @@
     "checkJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@": [
+        "./src/*"
+      ]
+    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
