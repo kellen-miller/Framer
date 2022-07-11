@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import type {Load} from '@sveltejs/kit'
 
+    // props keys are passed as variables to the script tag of the component
     export const load: Load = ({error, status}) => {
         return {
             props: {

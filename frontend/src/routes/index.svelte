@@ -1,6 +1,6 @@
 <script lang="ts">
-    import "../styles/app.css";
-    import Book from "../components/Book.svelte";
+    import "@/styles/app.css";
+    import Book from "@/components/BookCard.svelte";
     import {onMount} from "svelte";
 
     const getBooks = async () => {

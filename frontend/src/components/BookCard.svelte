@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let title
-    export let author
+    export let title: string
+    export let author: string
 </script>
 
 <card class="p-4 md:w-1/3">

@@ -1,5 +1,11 @@
 <script lang="ts">
     import '@/styles/app.css'
+    import Navbar from "@/components/nav/Navbar.svelte";
+
+    let stickToTop = true;
 </script>
 
-<slot/>
+<Navbar {stickToTop}/>
+<main>
+    <slot/>
+</main>
