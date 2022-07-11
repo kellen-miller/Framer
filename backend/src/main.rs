@@ -32,6 +32,8 @@ use serde_json::{
     json,
     Value,
 };
+use tower::ServiceBuilder;
+use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{
     fmt::layer,
     layer::SubscriberExt,
@@ -54,12 +56,20 @@ pub async fn main() {
         .and_then(|s| s.parse().ok())
         .unwrap_or(8080);
     let addr = SocketAddr::from((host, port));
+
     // Start tracing.
     tracing_subscriber::registry()
         .with(layer())
         .init();
-    let app = Router::new()
-        .route("/", get(hello))
+
+    // Enable cors
+    let cors_layer = CorsLayer::new()
+        .allow_methods(Any)
+        .allow_origin(Any)
+        .allow_headers(Any);
+
+    // Create demo router
+    let demo_routes = Router::new()
         .route("/demo.html", get(get_demo_html))
         .route("/hello.html", get(hello_html))
         .route("/demo-status", get(demo_status))
@@ -75,38 +85,92 @@ pub async fn main() {
         .route("/items", get(get_items))
         .route("/demo.json",
                get(get_demo_json)
-                   .put(put_demo_json))
-        .route("/books",
+                   .put(put_demo_json));
+
+    // Create books route
+    let book_routes = Router::new()
+        .route("/",
                get(get_books)
                    .put(put_books))
-        .route("/books/:id",
+        .route("/:id",
                get(get_books_id)
                    .delete(delete_books_id))
-        .route("/books/:id/form",
+        .route("/:id/form",
                get(get_books_id_form)
-                   .post(post_books_id_form),
-        )
+                   .post(post_books_id_form));
+
+    // Create app router
+    let app_routes = Router::new()
+        .route("/", get(hello))
+        .nest("/demo", demo_routes)
+        .nest("/books", book_routes)
         .fallback(fallback.into_service());
+    // .layer(ServiceBuilder::new().layer(cors_layer));
+
     Server::bind(&addr)
-        .serve(app.into_make_service())
+        .serve(app_routes.into_make_service())
         .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
 }
 
-/// axum handler for "DELETE /books/:id" which destroys a resource.
-/// This demo extracts an id, then mutates the book in the DATA store.
-pub async fn delete_books_id(Path(id): Path<u32>) -> Html<String> {
+
+/// axum handler for "GET /books" which responds
+/// of all books in the database formatted as a json array of books.
+/// This demo uses our DATA; a production app could use a database.
+/// This demo must clone the DATA in order to sort items by title.
+/// If the query parameters contain a "sort" parameter, then sort the books by that field if it exists.
+/// If the query parameters contain a "limit" parameter, then limit the books to that number after sorting.
+pub async fn get_books(Query(params): Query<HashMap<String, String>>) -> Json<Vec<Book>> {
     thread::spawn(move || {
-        let mut data = DATA.lock().unwrap();
-        if data.contains_key(&id) {
-            data.remove(&id);
-            format!("Delete book id: {}", &id)
-        } else {
-            format!("Book id not found: {}", &id)
+        let data = DATA.lock().unwrap();
+        let mut books_vec: Vec<Book> = Vec::new();
+        for (_, book) in data.iter() {
+            books_vec.push(book.clone());
+        }
+
+        match params.get("sort") {
+            Some(sort_param) => {
+                match sort_param.as_str() {
+                    "title" => books_vec.sort_by(|a, b| a.title.cmp(&b.title)),
+                    "author" => books_vec.sort_by(|a, b| a.author.cmp(&b.author)),
+                    _ => books_vec.sort_by(|a, b| a.title.cmp(&b.title)),
+                }
+            }
+            None => books_vec.sort_by(|a, b| a.title.cmp(&b.title)),
+        }
+
+        match params.get("limit") {
+            Some(limit_param) => {
+                let limit = limit_param.parse::<usize>().unwrap();
+                books_vec = books_vec.into_iter().take(limit).collect();
+            }
+            None => (),
+        }
+        Json(books_vec)
+    }).join().unwrap().into()
+}
+
+
+/// axum handler for "GET /books/:id" which responds with json
+/// of the book with the given id or 404 if not found.
+/// This demo uses our DATA; a production app could use a database.
+/// This demo must clone the book in order to return a copy.
+pub async fn get_books_id(Path(id): Path<u32>) -> Json<Book> {
+    thread::spawn(move || {
+        let data = DATA.lock().unwrap();
+        let book = data.get(&id).cloned();
+        match book {
+            Some(book) => Json(book),
+            None => Json(Book {
+                id: 0,
+                title: "".to_string(),
+                author: "".to_string(),
+            }),
         }
     }).join().unwrap().into()
 }
+
 
 /// axum handler for "POST /books/:id/form" which submits an HTML form.
 /// This demo shows how to do a form submission then update a resource.
@@ -158,16 +222,33 @@ pub async fn put_books(Json(book): Json<Book>) -> Html<String> {
     }).join().unwrap().into()
 }
 
-/// axum handler for "GET /books/:id" which responds with one resource HTML page.
-/// This demo app uses our DATA variable, and iterates on it to find the id.
-pub async fn get_books_id(Path(id): Path<u32>) -> Html<String> {
+/// axum handler for "DELETE /books/:id" which destroys a resource.
+/// This demo extracts an id, then mutates the book in the DATA store.
+pub async fn delete_books_id(Path(id): Path<u32>) -> Html<String> {
     thread::spawn(move || {
-        let data = DATA.lock().unwrap();
-        match data.get(&id) {
-            Some(book) => format!("<p>{}</p>\n", &book),
-            None => format!("<p>Book id {} not found</p>", id),
+        let mut data = DATA.lock().unwrap();
+        if data.contains_key(&id) {
+            data.remove(&id);
+            format!("Delete book id: {}", &id)
+        } else {
+            format!("Book id not found: {}", &id)
         }
     }).join().unwrap().into()
+}
+
+/// axum handler for any request that fails to match the router routes.
+/// This implementation returns HTTP status code Not Found (404).
+pub async fn fallback(uri: Uri) -> (StatusCode, String) {
+    (StatusCode::NOT_FOUND, format!("No route {}", uri))
+}
+
+/// Tokio signal handler that will wait for a user to press CTRL+C.
+/// We use this in our hyper `Server` method `with_graceful_shutdown`.
+async fn shutdown_signal() {
+    tokio::signal::ctrl_c()
+        .await
+        .expect("expect tokio signal ctrl-c");
+    println!("signal shutdown");
 }
 
 
@@ -176,33 +257,6 @@ pub async fn get_books_id(Path(id): Path<u32>) -> Html<String> {
 /// The `Json` type supports types that implement `serde::Deserialize`.
 pub async fn put_demo_json(Json(data): Json<Value>) -> String {
     format!("Put demo JSON data: {:?}", data)
-}
-
-/// axum handler for "GET /books" which responds with a resource page.
-/// This demo uses our DATA; a production app could use a database.
-/// This demo must clone the DATA in order to sort items by title.
-
-// write a function that returns a json array of books from the DATA store.
-// this function should be called from the get_books handler.
-// it should return a json array of books.
-//  let mut books = data.values()
-//             .collect::<Vec<_>>()
-//             .clone();
-//         books.sort_by(|a, b| a.title.cmp(&b.title));
-//         books.iter()
-//             .
-//             .map(|&book| format!("<p>{}</p>\n", &book))
-//             .collect::<String>()
-pub async fn get_books() -> Json<Value> {
-    thread::spawn(move || {
-        let data = DATA.lock().unwrap();
-        let mut books = data.values()
-            .collect::<Vec<_>>()
-            .clone();
-        books.sort_by(|a, b| a.title.cmp(&b.title));
-        let books_json = serde_json::to_value(books).unwrap();
-        books_json
-    }).join().unwrap().into()
 }
 
 /// axum handler for "PUT /demo.json" which uses `aumx::extract::Json`.
@@ -297,19 +351,4 @@ async fn get_demo_png() -> impl axum::response::IntoResponse {
         AppendHeaders([(header::CONTENT_TYPE, "image/png"), ]),
         base64::decode(png).unwrap(),
     )
-}
-
-/// axum handler for any request that fails to match the router routes.
-/// This implementation returns HTTP status code Not Found (404).
-pub async fn fallback(uri: Uri) -> (StatusCode, String) {
-    (StatusCode::NOT_FOUND, format!("No route {}", uri))
-}
-
-/// Tokio signal handler that will wait for a user to press CTRL+C.
-/// We use this in our hyper `Server` method `with_graceful_shutdown`.
-async fn shutdown_signal() {
-    tokio::signal::ctrl_c()
-        .await
-        .expect("expect tokio signal ctrl-c");
-    println!("signal shutdown");
 }

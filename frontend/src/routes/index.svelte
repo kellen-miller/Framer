@@ -1,6 +1,5 @@
 <script lang="ts">
     import "@/styles/app.css";
-    import Book from "@/components/BookCard.svelte";
     import {onMount} from "svelte";
 
     const getBooks = async () => {
@@ -22,13 +21,7 @@
 <section class="text-gray-600 body-font">
     <div class="container px-5 py-24 mx-auto">
         <div class="flex flex-wrap -m-4">
-            {#if books === undefined}
-                LOADING THOSE BOOKS...
-            {:else}
-                {#each books as book, index (book.id)}
-                    <Book title={book.title} author={book.author}/>
-                {/each}
-            {/if}
+            Welcome to the bookshelf!
         </div>
     </div>
 </section>

@@ -4,28 +4,23 @@ export type Book = {
     author: string,
 }
 
-const books = [
-    {
-        id: 1,
-        title: 'Book 1',
-        author: 'Author 1',
-    },
-    {
-        id: 2,
-        title: 'Book 2',
-        author: 'Author 2',
-    },
-    {
-        id: 3,
-        title: 'Book 3',
-        author: 'Author 3',
-    }
-]
+const baseUrl = 'http://0.0.0.0:8080/books';
 
 export const getBook = async (id: number): Promise<Book> => {
-    return books.find(book => book.id === id) || {id: 0, title: '', author: ''};
+    const url = `${baseUrl}/${id}`;
+    const response = await fetch(url);
+    return response.json();
 }
 
-export const getBooks = async ({limit}: { limit: number }): Promise<Book[]> => {
-    return books.slice(0, limit);
+export const getBooks = async ({limit, sort}: { limit: number, sort: string }): Promise<Book[]> => {
+    const queryParams = new URLSearchParams()
+    if (limit) {
+        queryParams.append('limit', String(limit))
+    }
+    if (sort) {
+        queryParams.append('sort', sort)
+    }
+    const url = baseUrl + (queryParams.toString() ? '?' + queryParams.toString() : '')
+    const response = await fetch(url);
+    return response.json();
 }

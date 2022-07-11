@@ -4,7 +4,7 @@ import {getBook} from "../../lib/repos/books";
 export const get: RequestHandler = async ({params}) => {
     const {id} = params;
     const book = await getBook(parseInt(id));
-    if (book) {
+    if (book.id > 0) {
         return {
             body: {
                 book

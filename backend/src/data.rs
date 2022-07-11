@@ -29,5 +29,10 @@ pub static DATA: Lazy<Mutex<HashMap<u32, Book>>> = Lazy::new(|| Mutex::new(
             title: "Candide".into(),
             author: "Voltaire".into(),
         }),
+        (4, Book {
+            id: 4,
+            title: "Lord of the Rings".into(),
+            author: "J.R.R. Tolkein".into(),
+        }),
     ])
 ));
