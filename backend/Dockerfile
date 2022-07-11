@@ -2,7 +2,7 @@
 ARG APP_NAME=framer-backend
 ARG APP_NAME_UNDERSCORE=framer_backend
 
-FROM rust:latest as build
+FROM rust:latest as builder
 
 ARG APP_NAME
 ARG APP_NAME_UNDERSCORE
@@ -20,6 +20,7 @@ RUN rm ./target/release/deps/${APP_NAME_UNDERSCORE}*
 RUN cargo build --release
 
 FROM rust:slim-buster
+
 ARG APP_NAME
 ARG APP_DIR=/usr/src/app
 ENV APP=$APP_NAME
@@ -27,15 +28,14 @@ ENV APP_USER=appuser
 
 RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
-    && mkdir -p ${APP_DIR}
+    && mkdir -p $APP_DIR
 
-COPY --from=build /${APP_NAME}/target/release/${APP_NAME} ${APP_DIR}/${APP_NAME}
+COPY --from=builder /$APP_NAME/target/release/$APP_NAME $APP_DIR/$APP_NAME
 
-RUN chown -R $APP_USER:$APP_USER ${APP_DIR}
+RUN chown -R $APP_USER:$APP_USER $APP_DIR
 
 USER $APP_USER
-WORKDIR ${APP_DIR}
-
+WORKDIR $APP_DIR
 EXPOSE 8080
 
-CMD "./${APP}"
+CMD "./$APP"

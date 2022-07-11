@@ -1,42 +1,43 @@
 ARG APP_NAME=framer-frontend
-ARG APP_DIR=/usr/src/app
+
 #docker run --rm --init --ulimit memlock=-1:-1 jarredsumner/bun:edge
 
-FROM jarredsumner/bun:edge as deps
-
-ARG APP_DIR
-WORKDIR $APP_DIR
-
-COPY ./package.json ./package.json
-RUN ["/bin/bash", "-c", "source /root/.bashrc && bun install"]
-
-FROM jarredsumner/bun:edge as builder
-
-RUN apk add --update --no-cache nodejs-current
-
-ARG APP_DIR
-WORKDIR $APP_DIR
-
-COPY . .
-COPY --from=deps $APP_DIR/node_modules /node_modules
-
-RUN ["/bin/bash", "-c", "source /root/.bashrc && bun run build"]
-
-FROM jarredsumner/bun:edge as runner
+FROM node:latest as deps
 
 ARG APP_NAME
-ENV APP=$APP_NAME
-ARG APP_DIR
-WORKDIR $APP_DIR
+WORKDIR /$APP_NAME
 
+COPY ./package.json ./package.json
+RUN npm install
+
+FROM node:latest as builder
+
+ARG APP_NAME
+WORKDIR /$APP_NAME
+
+COPY . .
+COPY --from=deps $APP_NAME/node_modules /node_modules
+
+RUN npm run build
+
+FROM node:alpine as runner
+
+ARG APP_NAME
+ARG APP_DIR=/usr/src/app
+ENV APP=$APP_NAME
 ENV APP_USER=appuser
+
 
 RUN addgroup -S $APP_USER \
     && adduser -S $APP_USER -G $APP_USER \
-    && mkdir -p ${APP_DIR}
+    && mkdir -p $APP_DIR
 
-COPY --from=builder $APP_DIR/build $APP_DIR/$APP
+COPY --from=builder /$APP_NAME/build $APP_DIR/$APP_NAME
 
+RUN chown -R $APP_USER:$APP_USER $APP_DIR
+
+USER $APP_USER
+WORKDIR $APP_DIR
 EXPOSE 3000
 
-CMD ["/bin/bash", "-c", "source /root/.bashrc && bun bun ${APP}server/index.js"]
+#CMD "node ./${APP}/index.js"
