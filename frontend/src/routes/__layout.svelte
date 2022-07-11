@@ -5,7 +5,11 @@
     let stickToTop = true;
 </script>
 
-<Navbar {stickToTop}/>
-<main>
+{#if !stickToTop}
     <slot/>
-</main>
+{/if}
+<Navbar {stickToTop}/>
+{#if stickToTop}
+    <slot/>
+{/if}
+

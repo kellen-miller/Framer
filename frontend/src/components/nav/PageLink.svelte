@@ -7,12 +7,13 @@
     $: pathname = $page.url.pathname
 </script>
 
-<div class="text-sm lg:flex-grow">
-    <a class="mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4" class:active={pathname === path}
-       href={path}>
-        {name}
-    </a>
-</div>
+
+<a class="block py-2 pr-4 pl-3 rounded md:bg-transparent md:p-0"
+   class:active={pathname === path}
+   href={path}>
+    {name}
+</a>
+
 
 <style>
     .active {
