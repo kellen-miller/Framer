@@ -23,15 +23,12 @@ RUN npm run build
 FROM node:alpine as server
 
 ARG APP_NAME
-ARG APP_USER=librarian
 WORKDIR /$APP_NAME
 ENV APP=$APP_NAME
 
-USER $APP_USER:$APP_USER
-
-COPY --from=builder --chown=APP_USER:APP_USER /$APP_NAME/package.json .
-COPY --from=builder --chown=APP_USER:APP_USER /$APP_NAME/node_modules ./node_modules
-COPY --from=builder --chown=APP_USER:APP_USER /$APP_NAME/build ./build
+COPY --from=builder /$APP_NAME/package.json .
+COPY --from=builder /$APP_NAME/node_modules ./node_modules
+COPY --from=builder /$APP_NAME/build ./build
 
 EXPOSE 3000
 
