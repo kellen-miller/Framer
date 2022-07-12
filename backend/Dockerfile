@@ -19,21 +19,18 @@ COPY ./src ./src
 RUN rm ./target/release/deps/$APP_NAME_UNDERSCORE*
 RUN cargo build --release
 
-FROM rust:slim-buster
+FROM rust:slim-buster as server
 
-ARG APP_USER=rusty
 ARG APP_NAME
-ENV APP=$APP_NAME
+ARG APP_USER=rusty
 WORKDIR /app
+ENV APP=$APP_NAME
 
 RUN groupadd $APP_USER && useradd -g $APP_USER $APP_USER
-
 COPY --from=builder /$APP_NAME/target/release/$APP_NAME ./$APP_NAME
 RUN chown -R $APP_USER:$APP_USER ./$APP_NAME
-
 USER $APP_USER
 
-ENV PORT 8080
 EXPOSE 8080
 
 CMD "./$APP"

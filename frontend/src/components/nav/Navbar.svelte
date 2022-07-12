@@ -16,7 +16,7 @@
 <nav class="sticky bg-violet-300/90 backdrop-blur-3xl shadow-xl rounded-lg p-6 mx-5 flex items-center justify-between"
      class:isStuck
      data-position={ stickToTop ? 'top' : 'bottom' }
-     on:stuck={handleStuck}
+     on:stuck={ handleStuck }
      use:sticky={ stickToTop }
 >
     <div class="container flex flex-wrap justify-between items-center mx-auto">

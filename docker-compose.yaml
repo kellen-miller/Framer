@@ -3,9 +3,11 @@ services:
     container_name: web
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: bun.dockerfile
     ports:
       - 3000:3000
+    environment:
+      - CONTAINER_HOST=docker
   server:
     container_name: server
     build:

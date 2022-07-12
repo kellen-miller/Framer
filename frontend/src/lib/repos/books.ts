@@ -4,8 +4,7 @@ export type Book = {
     author: string,
 }
 
-const baseUrl = 'http://server:8080/books';
-// const baseUrl = 'framer-server.internal/books';
+const baseUrl = "http://server:8080/books";
 
 export const getBook = async (id: number): Promise<Book> => {
     const url = `${baseUrl}/${id}`;
@@ -22,6 +21,7 @@ export const getBooks = async ({limit, sort}: { limit: number, sort: string }): 
         queryParams.append('sort', sort)
     }
     const url = baseUrl + (queryParams.toString() ? '?' + queryParams.toString() : '')
+    console.log(url)
     const response = await fetch(url);
     return response.json();
 }
