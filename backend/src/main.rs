@@ -12,7 +12,6 @@ use axum::{
     },
     handler::Handler,
     http::{
-        header,
         StatusCode,
         Uri,
     },
@@ -24,10 +23,7 @@ use axum::{
     routing::get,
     Server,
 };
-/// Use Serde JSON to serialize/deserialize JSON, such as in a request.
-/// axum creates JSON or extracts it by using `axum::extract::Json`.
-/// For this demo, see functions `get_demo_json` and `post_demo_json`.
-use serde_json::Value;
+use tower::ServiceBuilder;
 use tower_http::cors::{
     Any,
     CorsLayer,
@@ -77,8 +73,8 @@ pub async fn main() {
     // Create app router
     let app_routes = Router::new()
         .nest("/books", book_routes)
-        .fallback(fallback.into_service());
-    // .layer(ServiceBuilder::new().layer(cors_layer));
+        .fallback(fallback.into_service())
+        .layer(ServiceBuilder::new().layer(cors_layer));
 
     Server::bind(&addr)
         .serve(app_routes.into_make_service())

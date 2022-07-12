@@ -35,8 +35,9 @@ RUN addgroup -S $APP_USER \
     && adduser -S $APP_USER -G $APP_USER \
     && mkdir -p ${APP_DIR}
 
+COPY --from=deps /$APP_NAME/package.json $APP_DIR/$APP_NAME/package.json
 COPY --from=builder $APP_DIR/build $APP_DIR/$APP
 
 EXPOSE 3000
 
-CMD ["/bin/bash", "-c", "source /root/.bashrc && bun bun ${APP}server/index.js"]
+#CMD ["/bin/bash", "-c", "source /root/.bashrc && bun bun ${APP}server/index.js"]
