@@ -21,13 +21,19 @@ RUN cargo build --release
 
 FROM rust:slim-buster
 
+ARG APP_USER=rusty
 ARG APP_NAME
 ENV APP=$APP_NAME
-
 WORKDIR /app
 
-COPY --from=builder /$APP_NAME/target/release/$APP_NAME ./$APP_NAME
+RUN groupadd $APP_USER && useradd -g $APP_USER $APP_USER
 
+COPY --from=builder /$APP_NAME/target/release/$APP_NAME ./$APP_NAME
+RUN chown -R $APP_USER:$APP_USER ./$APP_NAME
+
+USER $APP_USER
+
+ENV PORT 8080
 EXPOSE 8080
 
 CMD "./$APP"

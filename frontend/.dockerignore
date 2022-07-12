@@ -1,3 +1,6 @@
+*ignore
+*ockerfile
+*.iml
+README.md
 node_modules/*
 build/*
-frontend.iml

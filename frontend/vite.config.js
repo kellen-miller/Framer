@@ -9,7 +9,11 @@ const config = {
             "@": path.resolve('./src'),
         },
     },
-
+    server: {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        }
+    }
 };
 
 export default config;

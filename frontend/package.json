@@ -1,7 +1,6 @@
 {
   "name": "framer-frontend",
   "version": "0.0.1",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "dev": "vite dev",

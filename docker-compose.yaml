@@ -1,14 +1,15 @@
 services:
   web:
-    container_name: frontend
+    container_name: web
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - 3000:3000
-    depends_on:
-      - backend
-  backend:
+  server:
+    container_name: server
     build:
       context: ./backend
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
