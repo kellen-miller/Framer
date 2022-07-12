@@ -1,47 +1,37 @@
 ARG APP_NAME=framer-frontend
 
-#docker run --rm --init --ulimit memlock=-1:-1 jarredsumner/bun:edge
-
-FROM node:latest as deps
+FROM node:alpine as deps
 
 ARG APP_NAME
 WORKDIR /$APP_NAME
 
-RUN npm install -g pnpm
-
 COPY ./package.json ./package.json
 
-RUN pnpm install
+RUN npm install
 
-FROM node:latest as builder
+FROM node:alpine as builder
 
 ARG APP_NAME
 WORKDIR /$APP_NAME
 
 COPY . .
-COPY --from=deps $APP_NAME/node_modules /node_modules
+COPY --from=deps /$APP_NAME/node_modules /node_modules
+COPY --from=deps /$APP_NAME/package*.json ./
 
-RUN npm run prepare
+RUN npm ci
+RUN npm audit fix
 RUN npm run build
 
 FROM node:alpine as runner
 
 ARG APP_NAME
-ARG APP_DIR=/usr/src/app
 ENV APP=$APP_NAME
-ENV APP_USER=appuser
 
-RUN addgroup -S $APP_USER \
-    && adduser -S $APP_USER -G $APP_USER \
-    && mkdir -p $APP_DIR
+WORKDIR /$APP_NAME
 
-COPY --from=deps /$APP_NAME/package.json $APP_DIR/$APP_NAME/package.json
-COPY --from=builder /$APP_NAME/build $APP_DIR/$APP_NAME
+COPY --from=builder /$APP_NAME/package*.json ./
+COPY --from=builder /$APP_NAME/build ./
 
-RUN chown -R $APP_USER:$APP_USER $APP_DIR
-
-USER $APP_USER
-WORKDIR $APP_DIR/$APP_NAME
 EXPOSE 3000
 
 CMD ["node", "./index.js"]

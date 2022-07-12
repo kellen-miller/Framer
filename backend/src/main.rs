@@ -15,10 +15,7 @@ use axum::{
         StatusCode,
         Uri,
     },
-    response::{
-        AppendHeaders,
-        Html,
-    },
+    response::Html,
     Router,
     routing::get,
     Server,
