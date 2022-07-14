@@ -15,9 +15,9 @@
   },
   "devDependencies": {
     "@square/svelte-store": "^0.1.5",
-    "@sveltejs/adapter-auto": "1.0.0-next.57",
+    "@sveltejs/adapter-auto": "1.0.0-next.59",
     "@sveltejs/adapter-node": "1.0.0-next.77",
-    "@sveltejs/kit": "1.0.0-next.370",
+    "@sveltejs/kit": "1.0.0-next.372",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "autoprefixer": "^10.4.7",
@@ -34,7 +34,7 @@
     "tailwindcss": "^3.1.6",
     "tslib": "^2.4.0",
     "typescript": "^4.7.4",
-    "vite": "^2.9.14"
+    "vite": "^3.0.0"
   },
   "dependencies": {
     "dotenv": "^16.0.1"

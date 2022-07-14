@@ -7,7 +7,7 @@ WORKDIR /$APP_NAME
 
 COPY package.json ./
 
-RUN npm install
+RUN npm install --force
 
 FROM node:latest as builder
 

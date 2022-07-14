@@ -4,7 +4,9 @@ export type Book = {
     author: string,
 }
 
-const baseUrl = "http://server:8080/books";
+// const baseUrl = "http://server:8080/books";
+const baseUrl = "framer-server.internal:8080/books";
+
 
 export const getBook = async (id: number): Promise<Book> => {
     const url = `${baseUrl}/${id}`;

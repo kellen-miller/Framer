@@ -44,7 +44,7 @@ pub async fn main() {
         .ok()
         .and_then(|s| s.parse().ok())
         .unwrap_or(8080);
-    let addr = SocketAddr::from((host, port));
+    let addr = "[::]:8080".parse::<SocketAddr>().unwrap();
 
     // Start tracing.
     tracing_subscriber::registry()
@@ -70,8 +70,8 @@ pub async fn main() {
     // Create app router
     let app_routes = Router::new()
         .nest("/books", book_routes)
-        .fallback(fallback.into_service())
-        .layer(ServiceBuilder::new().layer(cors_layer));
+        .fallback(fallback.into_service());
+    // .layer(ServiceBuilder::new().layer(cors_layer));
 
     Server::bind(&addr)
         .serve(app_routes.into_make_service())

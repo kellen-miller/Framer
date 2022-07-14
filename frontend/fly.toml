@@ -1,4 +1,4 @@
-# fly.toml file generated for framer-web on 2022-07-12T01:29:08-05:00
+# fly.toml file generated for framer-web on 2022-07-13T18:24:20-05:00
 
 app = "framer-web"
 kill_signal = "SIGINT"
@@ -13,7 +13,7 @@ auto_rollback = true
 
 [[services]]
 http_checks = []
-internal_port = 8080
+internal_port = 3000
 processes = ["app"]
 protocol = "tcp"
 script_checks = []
