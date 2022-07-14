@@ -30,6 +30,8 @@ COPY --from=builder /$APP_NAME/package.json .
 COPY --from=builder /$APP_NAME/node_modules ./node_modules
 COPY --from=builder /$APP_NAME/build ./build
 
+RUN sed -i 's|compression$1.exports({ threshold: 0 })|//compression$1.exports({ threshold: 0 })|g' build/index.js
+
 EXPOSE 3000
 
 CMD ["node", "build"]

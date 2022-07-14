@@ -19,7 +19,7 @@ COPY ./src ./src
 RUN rm ./target/release/deps/$APP_NAME_UNDERSCORE*
 RUN cargo build --release
 
-FROM rust:slim-buster as server
+FROM rust:slim-bullseye as server
 
 ARG APP_NAME
 ARG APP_USER=rusty

@@ -21,7 +21,9 @@
 >
     <div class="container flex flex-wrap justify-between items-center mx-auto">
         <a class="flex items-center">
-            <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Framer</span>
+            <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+                Framer
+            </span>
         </a>
         <div class="flex md:order-2">
             <button aria-controls="mobile-menu-3" aria-expanded="false"

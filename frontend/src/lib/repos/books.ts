@@ -4,8 +4,8 @@ export type Book = {
     author: string,
 }
 
-const baseUrl = "http://localhost:8080/books"; // local dev
-// const baseUrl = "http://server:8080/books"; // docker compose
+// const baseUrl = "http://localhost:8080/books"; // local dev
+const baseUrl = "http://host.docker.internal:8080/books"; // docker compose
 // const baseUrl = "http://framer-server.internal:8080/books"; // fly
 
 export const getBook = async (id: number): Promise<Book> => {
