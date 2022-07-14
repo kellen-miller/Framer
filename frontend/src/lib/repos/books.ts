@@ -4,8 +4,9 @@ export type Book = {
     author: string,
 }
 
+const baseUrl = "http://localhost:8080/books"; // local dev
 // const baseUrl = "http://server:8080/books"; // docker compose
-const baseUrl = "http://framer-server.internal:8080/books"; // fly
+// const baseUrl = "http://framer-server.internal:8080/books"; // fly
 
 export const getBook = async (id: number): Promise<Book> => {
     const url = `${baseUrl}/${id}`;
@@ -22,7 +23,6 @@ export const getBooks = async ({limit, sort}: { limit: number, sort: string }): 
         queryParams.append('sort', sort)
     }
     const url = baseUrl + (queryParams.toString() ? '?' + queryParams.toString() : '')
-    console.log(url)
     const response = await fetch(url);
     return response.json();
 }
