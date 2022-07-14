@@ -7,7 +7,6 @@ export type Book = {
 // const baseUrl = "http://server:8080/books"; // docker compose
 const baseUrl = "http://framer-server.internal:8080/books"; // fly
 
-
 export const getBook = async (id: number): Promise<Book> => {
     const url = `${baseUrl}/${id}`;
     const response = await fetch(url);
