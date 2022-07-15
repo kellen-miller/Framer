@@ -4,10 +4,10 @@ use std::fmt::{
     Result,
 };
 
-/// Use Deserialize to convert e.g. from request JSON into Book struct.
+// Use Deserialize to convert e.g. from request JSON into Book struct.
 use serde::Deserialize;
 
-/// Demo book structure with some example fields for id, title, author.
+// Demo book structure with some example fields for id, title, author.
 #[derive(Debug, Deserialize, Clone, Eq, Hash, PartialEq, serde::Serialize)]
 pub struct Book {
     pub id: u32,
@@ -15,8 +15,8 @@ pub struct Book {
     pub author: String,
 }
 
-/// Display the book using the format "{title} by {author}".
-/// This is a typical Rust trait and is not axum-specific.
+// Display the book using the format "{title} by {author}".
+// This is a typical Rust trait and is not axum-specific.
 impl Display for Book {
     fn fmt(&self, f: &mut Formatter) -> Result {
         write!(f, "{} by {}", self.title, self.author)

@@ -107,12 +107,12 @@ pub async fn run_migrations(db: DatabaseConnection) -> Result<(), DbErr> {
 }
 
 
-/// axum handler for "GET /books" which responds
-/// of all books in the database formatted as a json array of books.
-/// This demo uses our DATA; a production app could use a database.
-/// This demo must clone the DATA in order to sort items by title.
-/// If the query parameters contain a "sort" parameter, then sort the books by that field if it exists.
-/// If the query parameters contain a "limit" parameter, then limit the books to that number after sorting.
+// axum handler for "GET /books" which responds
+// of all books in the database formatted as a json array of books.
+// This demo uses our DATA; a production app could use a database.
+// This demo must clone the DATA in order to sort items by title.
+// If the query parameters contain a "sort" parameter, then sort the books by that field if it exists.
+// If the query parameters contain a "limit" parameter, then limit the books to that number after sorting.
 pub async fn get_books(Query(params): Query<HashMap<String, String>>) -> Json<Vec<Book>> {
     thread::spawn(move || {
         let data = DATA.lock().unwrap();
@@ -144,10 +144,10 @@ pub async fn get_books(Query(params): Query<HashMap<String, String>>) -> Json<Ve
 }
 
 
-/// axum handler for "GET /books/:id" which responds with json
-/// of the book with the given id or 404 if not found.
-/// This demo uses our DATA; a production app could use a database.
-/// This demo must clone the book in order to return a copy.
+// axum handler for "GET /books/:id" which responds with json
+// of the book with the given id or 404 if not found.
+// This demo uses our DATA; a production app could use a database.
+// This demo must clone the book in order to return a copy.
 pub async fn get_books_id(Path(id): Path<u32>) -> Json<Book> {
     thread::spawn(move || {
         let data = DATA.lock().unwrap();
@@ -163,8 +163,8 @@ pub async fn get_books_id(Path(id): Path<u32>) -> Json<Book> {
     }).join().unwrap().into()
 }
 
-/// axum handler for "PUT /books" which creates a new book resource.
-/// This demo shows how axum can extract JSON data into a Book struct.
+// axum handler for "PUT /books" which creates a new book resource.
+// This demo shows how axum can extract JSON data into a Book struct.
 pub async fn put_books(Json(book): Json<Book>) -> Html<String> {
     thread::spawn(move || {
         let mut data = DATA.lock().unwrap();
@@ -173,8 +173,8 @@ pub async fn put_books(Json(book): Json<Book>) -> Html<String> {
     }).join().unwrap().into()
 }
 
-/// axum handler for "DELETE /books/:id" which destroys a resource.
-/// This demo extracts an id, then mutates the book in the DATA store.
+// axum handler for "DELETE /books/:id" which destroys a resource.
+// This demo extracts an id, then mutates the book in the DATA store.
 pub async fn delete_books_id(Path(id): Path<u32>) -> Html<String> {
     thread::spawn(move || {
         let mut data = DATA.lock().unwrap();
@@ -187,14 +187,14 @@ pub async fn delete_books_id(Path(id): Path<u32>) -> Html<String> {
     }).join().unwrap().into()
 }
 
-/// axum handler for any request that fails to match the router routes.
-/// This implementation returns HTTP status code Not Found (404).
+// axum handler for any request that fails to match the router routes.
+// This implementation returns HTTP status code Not Found (404).
 pub async fn fallback(uri: Uri) -> (StatusCode, String) {
     (StatusCode::NOT_FOUND, format!("No route {}", uri))
 }
 
-/// Tokio signal handler that will wait for a user to press CTRL+C.
-/// We use this in our hyper `Server` method `with_graceful_shutdown`.
+// Tokio signal handler that will wait for a user to press CTRL+C.
+// We use this in our hyper `Server` method `with_graceful_shutdown`.
 async fn shutdown_signal() {
     tokio::signal::ctrl_c()
         .await
