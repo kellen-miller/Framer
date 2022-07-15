@@ -1,16 +1,18 @@
 services:
-#  web:
-  #    container_name: web
-  #    build:
-  #      context: ./frontend
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - 3000:3000
-  #    environment:
-  #      - HOST=host.docker.internal
-  #    depends_on:
-  #      - server
-  #      - db
+  web:
+    container_name: web
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - HOST=0.0.0.0
+      - SERVER_HOST=host.docker.internal
+      - SERVER_PORT=8080
+    depends_on:
+      - server
+      - db
   server:
     container_name: server
     build:

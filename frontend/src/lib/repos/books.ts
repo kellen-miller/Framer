@@ -4,9 +4,9 @@ export type Book = {
     author: string,
 }
 
-const host = process.env.HOST || 'localhost'
-const port = process.env.PORT || 8080
-const baseUrl = `http://${host}:${port}`
+const server_host = process.env.SERVER_HOST || 'localhost'
+const server_port = process.env.SERVER_PORT || 8080
+const baseUrl = `http://${server_host}:${server_port}/books`
 // const baseUrl = "http://localhost:8080/books"; // local dev
 // const baseUrl = "http://host.docker.internal:8080/books"; // docker compose
 // const baseUrl = "http://framer-server.internal:8080/books"; // fly

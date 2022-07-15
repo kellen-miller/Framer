@@ -7,7 +7,7 @@ WORKDIR /$APP_NAME
 
 COPY package.json ./
 
-RUN npm install --force
+RUN npm install
 
 FROM node:latest as builder
 
@@ -29,8 +29,6 @@ ENV APP=$APP_NAME
 COPY --from=builder /$APP_NAME/package.json .
 COPY --from=builder /$APP_NAME/node_modules ./node_modules
 COPY --from=builder /$APP_NAME/build ./build
-
-RUN sed -i 's|compression$1.exports({ threshold: 0 })|//compression$1.exports({ threshold: 0 })|g' build/index.js
 
 EXPOSE 3000
 

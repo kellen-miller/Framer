@@ -10,7 +10,8 @@ ARG APP_NAME_UNDERSCORE
 RUN USER=root cargo new --bin $APP_NAME
 WORKDIR /$APP_NAME
 
-COPY ./Cargo.toml ./Cargo.toml
+COPY . .
+RUN find packages \! -name "Cargo.toml" -print | xargs rm -rf
 RUN cargo build --release
 
 RUN rm src/*.rs

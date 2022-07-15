@@ -1,5 +1,9 @@
-use std::{collections::HashMap, env, thread};
-use std::net::SocketAddr;
+use std::{
+    collections::HashMap,
+    env,
+    net::SocketAddr,
+    thread,
+};
 
 use axum::{
     extract::{
@@ -17,12 +21,15 @@ use axum::{
     routing::get,
     Server,
 };
-use migrations::{Migrator, MigratorTrait, SchemaManager};
-use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
-use tower::ServiceBuilder;
-use tower_http::cors::{
-    Any,
-    CorsLayer,
+use migration::{
+    Migrator,
+    MigratorTrait,
+    SchemaManager,
+};
+use sea_orm::{
+    Database,
+    DatabaseConnection,
+    DbErr,
 };
 use tracing_subscriber::{
     fmt::layer,
@@ -94,10 +101,8 @@ pub fn get_db_url() -> String {
 
 pub async fn run_migrations(db: DatabaseConnection) -> Result<(), DbErr> {
     let schema_manager = SchemaManager::new(&db); // To investigate the schema
-
     Migrator::up(&db, None).await.unwrap();
     assert!(schema_manager.has_table("books").await?);
-
     Ok(())
 }
 
