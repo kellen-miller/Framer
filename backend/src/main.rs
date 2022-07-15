@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    thread, // Use Thread for spawning a thread e.g. to acquire our DATA mutex lock.
-};
+use std::{collections::HashMap, env, thread};
 use std::net::SocketAddr;
 
 use axum::{
@@ -20,6 +17,8 @@ use axum::{
     routing::get,
     Server,
 };
+use migrations::{Migrator, MigratorTrait, SchemaManager};
+use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
 use tower::ServiceBuilder;
 use tower_http::cors::{
     Any,
@@ -39,11 +38,6 @@ mod data;
 
 #[tokio::main]
 pub async fn main() {
-    let host = [0, 0, 0, 0];
-    let port = std::env::var("PORT")
-        .ok()
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(8080);
     let addr = "[::]:8080".parse::<SocketAddr>().unwrap();
 
     // Start tracing.
@@ -52,10 +46,10 @@ pub async fn main() {
         .init();
 
     // Enable cors
-    let cors_layer = CorsLayer::new()
-        .allow_methods(Any)
-        .allow_origin(Any)
-        .allow_headers(Any);
+    // let cors_layer = CorsLayer::new()
+    //     .allow_methods(Any)
+    //     .allow_origin(Any)
+    //     .allow_headers(Any);
 
     // Create books route
     let book_routes = Router::new()
@@ -78,6 +72,33 @@ pub async fn main() {
         .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
+
+    // Create database connection
+    let db_url = get_db_url();
+    let db = Database::connect(db_url)
+        .await
+        .expect("Failed to connect to database");
+    // Migrator::up(&db, None).await.unwrap();
+    run_migrations(db).await.unwrap();
+    println!("Connected to database!!!!");
+}
+
+pub fn get_db_url() -> String {
+    let user = env::var("DB_USER").expect("DB_USER not set");
+    let password = env::var("DB_PASSWORD").expect("DB_PASSWORD not set");
+    let db_name = env::var("DB_NAME").expect("DB_NAME not set");
+    let db_host = env::var("DB_HOST").expect("DB_HOST not set");
+    let db_port = env::var("DB_PORT").expect("DB_PORT not set");
+    return format!("postgres://{}:{}@{}:{}/{}", user, password, db_host, db_port, db_name);
+}
+
+pub async fn run_migrations(db: DatabaseConnection) -> Result<(), DbErr> {
+    let schema_manager = SchemaManager::new(&db); // To investigate the schema
+
+    Migrator::up(&db, None).await.unwrap();
+    assert!(schema_manager.has_table("books").await?);
+
+    Ok(())
 }
 
 
