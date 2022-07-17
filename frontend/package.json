@@ -16,13 +16,20 @@
   },
   "devDependencies": {
     "@square/svelte-store": "^0.1.5",
-    "@sveltejs/adapter-auto": "1.0.0-next.60",
+    "@sveltejs/adapter-auto": "1.0.0-next.61",
     "@sveltejs/adapter-node": "1.0.0-next.81",
     "@sveltejs/kit": "1.0.0-next.377",
+    "@svelteuidev/composables": "^0.7.0",
+    "@svelteuidev/core": "^0.7.0",
+    "@svelteuidev/dates": "^0.7.0",
+    "@svelteuidev/motion": "^0.7.0",
+    "@svelteuidev/preprocessors": "^0.7.0",
+    "@svelteuidev/prism": "^0.7.0",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "autoprefixer": "^10.4.7",
-    "eslint": "^8.19.0",
+    "dayjs": "^1.11.3",
+    "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-svelte3": "^4.0.0",
     "postcss": "^8.4.14",
@@ -38,6 +45,7 @@
     "vite": "^3.0.0"
   },
   "dependencies": {
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "radix-icons-svelte": "1.2.1"
   }
 }
